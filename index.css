@@ -1,0 +1,60 @@
+div#dynamic-container {
+	background-color: transparent; 
+	position:relative;
+	/*border: 1px solid black;*/
+}
+div#innerCircle {
+	position: relative;
+	/*left: 10px;
+	top:10px;*/
+	background-color: trasnparent;
+    border-radius:100%;
+    -moz-border-radius: 100%;
+    -webkit-border-radius: 100%;
+}           
+div#marker{
+	width: 10px;
+	height:10px;
+	background: black;
+	position:relative;
+	cursor: crosshair;
+	margin-bottom: -10px;
+   	/*-moz-transform:rotate(45deg);
+    -moz-transform-origin:5px 50px;
+    
+    transform:rotate(45deg);
+    transform-origin:5px 50px;                          
+
+    -ms-transform:rotate(45deg);
+    -ms-transform-origin:5px 50px;                                
+    
+    -webkit-transform:rotate(45deg);
+    -webkit-transform-origin:5px 50px;*/                      
+
+    z-index:17;
+}
+div#marker1{
+	width: 10px;
+	height:10px;
+	background: black;
+	position:relative;
+	cursor: crosshair;
+	margin-bottom: -10px;
+   	/*-moz-transform:rotate(45deg);
+    -moz-transform-origin:5px 50px;
+    
+    transform:rotate(45deg);
+    transform-origin:5px 50px;                          
+
+    -ms-transform:rotate(45deg);
+    -ms-transform-origin:5px 50px;                                
+    
+    -webkit-transform:rotate(45deg);
+    -webkit-transform-origin:5px 50px;*/                      
+
+    z-index:17;
+} 
+
+#arc {
+	position: relative;
+}
