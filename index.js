@@ -4,7 +4,7 @@ var degreesEnd = 0;
 
 var arrayMarkerPairs = [];
 
-function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropper, startOrEnd, arc){
+function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropper, startOrEnd, arc, index){
     //alert(offsetSelector.left);
 
     //console.log(offsetSelector.width());
@@ -20,12 +20,12 @@ function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropp
     //console.log(cssDegs);
     var radioP = radio - 2.5;
     if (startOrEnd === 'start') {
-        degreesStart = cssDegs;
+        arrayMarkerPairs[index].startAngle = cssDegs;
     }
     else {
-        degreesEnd = cssDegs;
+        arrayMarkerPairs[index].endAngle = cssDegs;
     }
-    arc.children()[0].setAttribute("d", describeArc(radio, radio, radioP, degreesStart, degreesEnd));  
+    arc.children()[0].setAttribute("d", describeArc(radio, radio, radioP, arrayMarkerPairs[index].startAngle, arrayMarkerPairs[index].endAngle));  
     $('body').on('mouseup', function(event){ $('body').unbind('mousemove')});
 
 }
@@ -40,9 +40,11 @@ function convertThetaToCssDegs(theta){
 
 $(document).ready(function(){  
     var firstPair =  {
-        markerStart: $('#marker_1_start'),
-        markerEnd : $('#marker_1_end'),
-        arc: $('#arc_1')
+        markerStart: $('#marker_0_start'),
+        markerEnd : $('#marker_0_end'),
+        arc: $('#arc_0'),
+        startAngle: 0,
+        endAngle: 0
     };
     arrayMarkerPairs.push(firstPair);
 
@@ -52,8 +54,9 @@ $(document).ready(function(){
     $('#dynamic-container')[0].style.height = diametro + 'px';
     $('#innerCircle')[0].style.width = diametro + 'px';
     $('#innerCircle')[0].style.height = diametro + 'px';
+    $('#innerCircle')[0].style.marginBottom = -diametro + 'px';
 
-    initLastPair();                  
+    initLastPair();                
 }); 
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
@@ -86,22 +89,24 @@ function describeArc(x, y, radius, startAngle, endAngle){
     return d;       
 }
 
-function initMarker(marker, arc) {
+function initMarker(marker, arc, index) {
     var startOrEnd = marker[0].id.split("_")[2];
     var radioP = radio - 5;
     marker[0].style.left = radioP + 'px';
     marker[0].style.transformOrigin = "5px " + radio + "px";
     marker.on('mousedown', function(){
         $('body').on('mousemove', function(event){
-            rotateAnnotationCropper($('#innerCircle').parent(), event.pageX,event.pageY, marker, startOrEnd, arc);    
+            rotateAnnotationCropper($('#innerCircle').parent(), event.pageX,event.pageY, marker, startOrEnd, arc, index);    
         });                 
     });
 }
 
 function initLastPair() {
-    var currentMarkerPair = arrayMarkerPairs[arrayMarkerPairs.length - 1];
-    initMarker(currentMarkerPair.markerStart, currentMarkerPair.arc);
-    initMarker(currentMarkerPair.markerEnd, currentMarkerPair.arc);
+    var index = arrayMarkerPairs.length - 1;
+    var currentMarkerPair = arrayMarkerPairs[index];
+
+    initMarker(currentMarkerPair.markerStart, currentMarkerPair.arc, index);
+    initMarker(currentMarkerPair.markerEnd, currentMarkerPair.arc, index);
 
     var diametro = radio*2;
     currentMarkerPair.arc[0].style.width = diametro + 'px'; 
@@ -109,4 +114,24 @@ function initLastPair() {
     currentMarkerPair.arc[0].style.top = -diametro + 'px';
 }
 
+function createPair() {
+    var lastPair = {
+        startAngle: 0,
+        endAngle: 0
+    };
+    lastPair.markerStart = $('<div>', { id: "marker_" + arrayMarkerPairs.length + "_start", class: "marker"});
+    lastPair.markerEnd = $('<div>', { id: "marker_" + arrayMarkerPairs.length + "_end", class: "marker"});
+    lastPair.arc = $('<svg>', { id: "arc_" + arrayMarkerPairs.length, class: "arc"});
+    lastPair.arc.append(
+        $('<path>', { fill: "none", stroke: "#446688", "stroke-width":"5"})
+        );
+    $('#dynamic-container').append([lastPair.markerStart[0], lastPair.markerEnd[0]]);
+    $('#time-pair-container').append(lastPair.arc);
+    arrayMarkerPairs.push(lastPair);
+    //console.log
+    initLastPair();
+}
 
+window.setTimeout(function() {
+    createPair()
+}, 1000);  
