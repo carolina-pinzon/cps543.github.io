@@ -23,6 +23,6 @@ div#innerCircle {
     z-index:17;
 }   
 
-#arc {
+.arc {
 	position: relative;
 }

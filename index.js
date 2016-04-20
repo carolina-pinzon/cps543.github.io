@@ -4,7 +4,7 @@ var degreesEnd = 0;
 
 var arrayMarkerPairs = [];
 
-function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropper, startOrEnd){
+function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropper, startOrEnd, arc){
     //alert(offsetSelector.left);
 
     //console.log(offsetSelector.width());
@@ -25,12 +25,7 @@ function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropp
     else {
         degreesEnd = cssDegs;
     }
-    /*if (degreesStart > degreesEnd) {
-        var temp = degreesStart;
-        degreesStart = degreesEnd;
-        degreesEnd = temp;
-    }*/
-    document.getElementById("arc1").setAttribute("d", describeArc(radio, radio, radioP, degreesStart, degreesEnd));  
+    arc.children()[0].setAttribute("d", describeArc(radio, radio, radioP, degreesStart, degreesEnd));  
     $('body').on('mouseup', function(event){ $('body').unbind('mousemove')});
 
 }
@@ -47,7 +42,7 @@ $(document).ready(function(){
     var firstPair =  {
         markerStart: $('#marker_1_start'),
         markerEnd : $('#marker_1_end'),
-        arc: $('#arc')
+        arc: $('#arc_1')
     };
     arrayMarkerPairs.push(firstPair);
 
@@ -58,18 +53,7 @@ $(document).ready(function(){
     $('#innerCircle')[0].style.width = diametro + 'px';
     $('#innerCircle')[0].style.height = diametro + 'px';
 
-    //
-    var currentMarkerPair = arrayMarkerPairs[arrayMarkerPairs.length - 1];
-    //console.log(currentMarkerPair);
-    initMarker(currentMarkerPair.markerStart);
-    initMarker(currentMarkerPair.markerEnd);
-    
-    var diametroP = diametro + radio/2 + 4;;
-    $('#arc')[0].style.width = diametro + 'px'; 
-    $('#arc')[0].style.height = diametro + 'px';
-    $('#arc')[0].style.top = -diametro + 'px';
-
-    //document.getElementById("arc1").setAttribute("d", describeArc(80, 80, 50, 0, 270));                  
+    initLastPair();                  
 }); 
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
@@ -102,16 +86,27 @@ function describeArc(x, y, radius, startAngle, endAngle){
     return d;       
 }
 
-function initMarker(marker) {
+function initMarker(marker, arc) {
     var startOrEnd = marker[0].id.split("_")[2];
     var radioP = radio - 5;
     marker[0].style.left = radioP + 'px';
     marker[0].style.transformOrigin = "5px " + radio + "px";
     marker.on('mousedown', function(){
         $('body').on('mousemove', function(event){
-            rotateAnnotationCropper($('#innerCircle').parent(), event.pageX,event.pageY, marker, startOrEnd);    
+            rotateAnnotationCropper($('#innerCircle').parent(), event.pageX,event.pageY, marker, startOrEnd, arc);    
         });                 
     });
+}
+
+function initLastPair() {
+    var currentMarkerPair = arrayMarkerPairs[arrayMarkerPairs.length - 1];
+    initMarker(currentMarkerPair.markerStart, currentMarkerPair.arc);
+    initMarker(currentMarkerPair.markerEnd, currentMarkerPair.arc);
+
+    var diametro = radio*2;
+    currentMarkerPair.arc[0].style.width = diametro + 'px'; 
+    currentMarkerPair.arc[0].style.height = diametro + 'px';
+    currentMarkerPair.arc[0].style.top = -diametro + 'px';
 }
 
 
