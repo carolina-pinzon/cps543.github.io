@@ -26,3 +26,7 @@ div#innerCircle {
 .arc {
 	position: relative;
 }
+
+.circleLines {
+    position: relative;
+}

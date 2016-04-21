@@ -1,6 +1,4 @@
-var radio = 50;
-var degreesStart = 0;
-var degreesEnd = 0;
+var radio = 100;
 
 var arrayMarkerPairs = [];
 
@@ -104,7 +102,7 @@ function buildLastPair(cssDegs) {
     lastPair.arc.setAttributeNS(null, "class", "arc"); 
     lastPair.arc.style.width = diametro + 'px';
     lastPair.arc.style.height = diametro + 'px';
-    lastPair.arc.style.top = -diametro + 'px';
+    //lastPair.arc.style.top = -diametro + 'px';
     lastPair.arc.style.marginRight = -diametro + 'px';
     var newpath = document.createElementNS("http://www.w3.org/2000/svg","path");  
         newpath.setAttributeNS(null, "stroke", "#446688"); 
@@ -125,10 +123,10 @@ function createPair(event) {
     $('#dynamic-container').append([lastPair.markerStart[0], lastPair.markerEnd[0]]);
     $('#time-pair-container').append(lastPair.arc);
 
-    if (arrayMarkerPairs.length > 0) {
+    /*if (arrayMarkerPairs.length > 0) {
         arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.removeEventListener("click", createPair);
     }
-    lastPair.arc.addEventListener("click", createPair);
+    lastPair.arc.addEventListener("click", createPair);*/
     
     arrayMarkerPairs.push(lastPair);
     initLastPair(cssDegs);
@@ -145,7 +143,7 @@ function KeyPress(e) {
         pairToRemove.arc.remove();
         arrayMarkerPairs.pop();
 
-        arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.addEventListener("click", createPair);
+        //arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.addEventListener("click", createPair);
     }
 }
 
@@ -154,6 +152,7 @@ $(document).ready(function(){
 
     $('#dynamic-container')[0].style.width = diametro + 'px'; 
     $('#dynamic-container')[0].style.height = diametro + 'px';
+    $('#dynamic-container')[0].style.marginBottom = -diametro + 'px';
     $('#innerCircle')[0].style.width = diametro + 'px';
     $('#innerCircle')[0].style.height = diametro + 'px';
     $('#innerCircle')[0].style.marginBottom = -diametro + 'px';
@@ -161,5 +160,92 @@ $(document).ready(function(){
     createPair();  
 
     document.onkeydown = KeyPress;
+    /*
+        <svg height="300" width="300">
+          <g fill="none" stroke="black" stroke-width="15">
+            <circle cx="150" cy="150" r="100" stroke-dasharray="1,51.5" />
+          </g>
+        </svg>*/
+
+
+    var today = new Date();
+    var numberDaysYear = 0;
+    for (var i = 1; i <= 12; i++) {
+        numberDaysYear += (new Date(today.getFullYear(), i, 0)).getDate();
+    }
+    var pixelsPerDay = 2*(radio-5)*Math.PI/numberDaysYear - 1;
+    for (var i = 1; i <= 12; i++) {
+        numberDaysYear += (new Date(today.getFullYear(), i, 0)).getDate();
+    }
+
+    var n = 6;
+    var pixelsPerDay = ((2*(radio-5)*Math.PI/12 - n - 2)-3)/4;
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+        svg.setAttributeNS(null, "width", radio*2 + 10); 
+        svg.setAttributeNS(null, "height", radio*2 + 10); 
+        svg.setAttributeNS(null, "class", "circleLines"); 
+        svg.style.top = -radio*2 - 4 + 'px';
+        svg.style.marginRight = -radio*2 - 10 + 'px';
+        svg.style.zIndex = 0;
+    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
+        g.setAttributeNS(null, "stroke", "black"); 
+        g.setAttributeNS(null, "stroke-width", 10); 
+        g.setAttributeNS(null, "fill", "none");
+    var circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+        circle.setAttributeNS(null, "cx", radio); 
+        circle.setAttributeNS(null, "cy", radio); 
+        circle.setAttributeNS(null, "r", radio-5);
+        circle.setAttributeNS(null, "stroke-dasharray", "1," + pixelsPerDay + ",1," + pixelsPerDay + ",1," + pixelsPerDay + ",1," + pixelsPerDay + ",1," + n);
+
+    var n = 6;
+    var pixelsPerMonth = 2*(radio-10)*Math.PI/12 - n - 2;
+
+    g.appendChild(circle);
+    svg.appendChild(g);
+    //document.getElementById('body').appendChild(svg);
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+        svg.setAttributeNS(null, "width", radio*2 + 20); 
+        svg.setAttributeNS(null, "height", radio*2 + 20); 
+        svg.setAttributeNS(null, "class", "circleLines"); 
+        svg.style.top = -radio*2 - 4 + 'px';
+        svg.style.marginRight = -radio*2 - 20 + 'px';
+        svg.style.zIndex = 0;
+    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
+        g.setAttributeNS(null, "stroke", "black"); 
+        g.setAttributeNS(null, "stroke-width", 20); 
+        g.setAttributeNS(null, "fill", "none");
+    var circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+        circle.setAttributeNS(null, "cx", radio); 
+        circle.setAttributeNS(null, "cy", radio); 
+        circle.setAttributeNS(null, "r", radio-10);
+        circle.setAttributeNS(null, "stroke-dasharray", "1," + pixelsPerMonth + ",1," + n);
+    g.appendChild(circle);
+    svg.appendChild(g);
+    //document.getElementById('body').appendChild(svg);
+
+    var strokeWidth = 10;
+    var pixelsPerMonth = 2*(radio-strokeWidth/2)*Math.PI/12 - 1;
+    var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+        svg.setAttributeNS(null, "width", radio*2 + strokeWidth); 
+        svg.setAttributeNS(null, "height", radio*2 + strokeWidth); 
+        svg.setAttributeNS(null, "class", "circleLines"); 
+        svg.style.top = -radio*2 - 4 + 'px';
+        svg.style.marginRight = -radio*2 - strokeWidth + 'px';
+        svg.style.zIndex = 0;
+    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
+        g.setAttributeNS(null, "stroke", "black"); 
+        g.setAttributeNS(null, "stroke-width", strokeWidth); 
+        g.setAttributeNS(null, "fill", "none");
+    var circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+        circle.setAttributeNS(null, "cx", radio); 
+        circle.setAttributeNS(null, "cy", radio); 
+        circle.setAttributeNS(null, "r", radio-strokeWidth/2);
+        circle.setAttributeNS(null, "stroke-dasharray", "1," + pixelsPerMonth);
+    g.appendChild(circle);
+    svg.appendChild(g);
+    document.getElementById('body').appendChild(svg);
+    svg.addEventListener("click", createPair);
         
 }); 
