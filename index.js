@@ -131,11 +131,15 @@ function createPair(event) {
 function KeyPress(e) {
     var evtobj = window.event? event : e
     console.log(arrayMarkerPairs.length);
-    if(evtobj.keyCode == 90 && evtobj.ctrlKey && arrayMarkerPairs.length > 0){
+    if(evtobj.keyCode == 90 && (evtobj.ctrlKey || evtobj.metaKey) && arrayMarkerPairs.length > 1){
         var pairToRemove = arrayMarkerPairs[arrayMarkerPairs.length - 1];
         pairToRemove.markerStart.remove();
         pairToRemove.markerEnd.remove();
+        pairToRemove.arc.removeEventListener("click", createPair);
+        pairToRemove.arc.remove();
         arrayMarkerPairs.pop();
+
+        arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.addEventListener("click", createPair);
     }
 }
 
