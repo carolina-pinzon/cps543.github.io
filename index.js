@@ -1,4 +1,4 @@
-var radio = 100;
+var radio = 50;
 var degreesStart = 0;
 var degreesEnd = 0;
 
@@ -60,11 +60,14 @@ function describeArc(x, y, radius, startAngle, endAngle){
     return d;       
 }
 
-function initMarker(marker, arc, index) {
+function initMarker(marker, arc, index,initialDegree) {
     var startOrEnd = marker[0].id.split("_")[2];
     var radioP = radio - 5;
     marker[0].style.left = radioP + 'px';
     marker[0].style.transformOrigin = "5px " + radio + "px";
+    //marker[0].style.transformOrigin = "5px " + radio + "px";
+    var rotate = 'rotate(' +initialDegree + 'deg)';
+    marker.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
     marker.on('mousedown', function(){
         $('body').on('mousemove', function(event){
             rotateAnnotationCropper($('#innerCircle').parent(), event.pageX,event.pageY, marker, startOrEnd, arc, index);    
@@ -72,19 +75,31 @@ function initMarker(marker, arc, index) {
     });
 }
 
-function initLastPair() {
+function initLastPair(initialDegree) {
     var index = arrayMarkerPairs.length - 1;
     var currentMarkerPair = arrayMarkerPairs[index];
 
-    initMarker(currentMarkerPair.markerStart, currentMarkerPair.arc, index);
-    initMarker(currentMarkerPair.markerEnd, currentMarkerPair.arc, index);
+    initMarker(currentMarkerPair.markerStart, currentMarkerPair.arc, index, initialDegree);
+    initMarker(currentMarkerPair.markerEnd, currentMarkerPair.arc, index, initialDegree);
 }
 
-function createPair() {
+function createPair(event) {
+    var cssDegs = 0;
+    if (event) {
+        console.log(event.clientX, event.clientY);
+        var offsetSelector = $('#innerCircle').parent();
+        var x = event.clientX - offsetSelector.offset().left - offsetSelector.width()/2;
+        var y = -1*(event.clientY - offsetSelector.offset().top - offsetSelector.height()/2);
+        var theta = Math.atan2(y,x)*(180/Math.PI);        
+
+        var cssDegs = convertThetaToCssDegs(theta);
+        console.log(cssDegs);
+    }
+
     var diametro = radio*2;
     var lastPair = {
-        startAngle: 0,
-        endAngle: 0
+        startAngle: cssDegs,
+        endAngle: cssDegs
     };
     lastPair.markerStart = $('<div>', { id: "marker_" + arrayMarkerPairs.length + "_start", class: "marker"});
     lastPair.markerEnd = $('<div>', { id: "marker_" + arrayMarkerPairs.length + "_end", class: "marker"});
@@ -102,9 +117,27 @@ function createPair() {
 
     $('#dynamic-container').append([lastPair.markerStart[0], lastPair.markerEnd[0]]);
     $('#time-pair-container').append(lastPair.arc);
+
+    
+    if (arrayMarkerPairs.length > 0) {
+        arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.removeEventListener("click", createPair);
+    }
+    lastPair.arc.addEventListener("click", createPair);
+    
     arrayMarkerPairs.push(lastPair);
-    initLastPair();
+    initLastPair(cssDegs);
 } 
+
+function KeyPress(e) {
+    console.log();
+    //evtobj
+    var evtobj = window.event? event : e
+    if(evtobj.keyCode == 90 && evtobj.ctrlKey){
+        var pairToRemove = arrayMarkerPairs[arrayMarkerPairs.length - 1];
+        pairToRemove.markerStart.remove();
+        pairToRemove.markerEnd.remove();
+    }
+}
 
 $(document).ready(function(){  
     var diametro = radio*2;
@@ -116,5 +149,16 @@ $(document).ready(function(){
     $('#innerCircle')[0].style.marginBottom = -diametro + 'px';
 
     createPair();  
+
+    /*$(document).keypress(function(event) {
+        if (event.which == 115 && (event.ctrlKey||event.metaKey)|| (event.which == 19)) {
+            event.preventDefault();
+            // do stuff
+            console.log('nothing');
+            return false;
+        }
+        console.log('cmd z');
+        return true;
+    });*/
         
 }); 
