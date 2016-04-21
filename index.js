@@ -83,19 +83,16 @@ function initLastPair(initialDegree) {
     initMarker(currentMarkerPair.markerEnd, currentMarkerPair.arc, index, initialDegree);
 }
 
-function createPair(event) {
-    var cssDegs = 0;
-    if (event) {
-        console.log(event.clientX, event.clientY);
-        var offsetSelector = $('#innerCircle').parent();
-        var x = event.clientX - offsetSelector.offset().left - offsetSelector.width()/2;
-        var y = -1*(event.clientY - offsetSelector.offset().top - offsetSelector.height()/2);
-        var theta = Math.atan2(y,x)*(180/Math.PI);        
+function getCssDegrees(event) {
+    console.log(event.clientX, event.clientY);
+    var offsetSelector = $('#innerCircle').parent();
+    var x = event.clientX - offsetSelector.offset().left - offsetSelector.width()/2;
+    var y = -1*(event.clientY - offsetSelector.offset().top - offsetSelector.height()/2);
+    var theta = Math.atan2(y,x)*(180/Math.PI);
+    return convertThetaToCssDegs(theta);
+}
 
-        var cssDegs = convertThetaToCssDegs(theta);
-        console.log(cssDegs);
-    }
-
+function buildLastPair(cssDegs) {
     var diametro = radio*2;
     var lastPair = {
         startAngle: cssDegs,
@@ -114,11 +111,20 @@ function createPair(event) {
         newpath.setAttributeNS(null, "stroke-width", 5); 
         newpath.setAttributeNS(null, "fill", "none");
     lastPair.arc.appendChild(newpath);
+    return lastPair;
+}
+
+function createPair(event) {
+    var cssDegs = 0;
+    if (event) {
+        cssDegs = getCssDegrees(event);
+        console.log(cssDegs);
+    }
+    var lastPair = buildLastPair(cssDegs);
 
     $('#dynamic-container').append([lastPair.markerStart[0], lastPair.markerEnd[0]]);
     $('#time-pair-container').append(lastPair.arc);
 
-    
     if (arrayMarkerPairs.length > 0) {
         arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.removeEventListener("click", createPair);
     }
