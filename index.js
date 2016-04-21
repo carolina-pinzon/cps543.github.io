@@ -129,13 +129,13 @@ function createPair(event) {
 } 
 
 function KeyPress(e) {
-    console.log();
-    //evtobj
     var evtobj = window.event? event : e
-    if(evtobj.keyCode == 90 && evtobj.ctrlKey){
+    console.log(arrayMarkerPairs.length);
+    if(evtobj.keyCode == 90 && evtobj.ctrlKey && arrayMarkerPairs.length > 0){
         var pairToRemove = arrayMarkerPairs[arrayMarkerPairs.length - 1];
         pairToRemove.markerStart.remove();
         pairToRemove.markerEnd.remove();
+        arrayMarkerPairs.pop();
     }
 }
 
@@ -150,15 +150,6 @@ $(document).ready(function(){
 
     createPair();  
 
-    /*$(document).keypress(function(event) {
-        if (event.which == 115 && (event.ctrlKey||event.metaKey)|| (event.which == 19)) {
-            event.preventDefault();
-            // do stuff
-            console.log('nothing');
-            return false;
-        }
-        console.log('cmd z');
-        return true;
-    });*/
+    document.onkeydown = KeyPress;
         
 }); 
