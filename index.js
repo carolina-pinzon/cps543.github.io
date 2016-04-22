@@ -2,6 +2,8 @@ var radio = 100;
 
 var arrayMarkerPairs = [];
 
+var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
 function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropper, startOrEnd, arc, index){
     var x = xCoordinate - offsetSelector.offset().left - offsetSelector.width()/2;
     var y = -1*(yCoordinate - offsetSelector.offset().top - offsetSelector.height()/2);
@@ -147,6 +149,18 @@ function KeyPress(e) {
     }
 }
 
+function addMonthNames() {
+    for (var i = 0; i < months.length; i++) {
+        for (var j = 0; j < months[i].length; j++) {
+            console.log(months[i].charAt(j));
+            var id = i*3 + j;
+            var span = $('<span>', {'id': 'monthNames_' + id}).text(months[i].charAt(j));
+            console.log(span);
+            $('#month-names').append(span);
+        }
+    }
+}
+
 $(document).ready(function(){  
     var diametro = radio*2;
 
@@ -247,5 +261,7 @@ $(document).ready(function(){
     svg.appendChild(g);
     document.getElementById('body').appendChild(svg);
     svg.addEventListener("click", createPair);
+
+    addMonthNames();
         
 }); 

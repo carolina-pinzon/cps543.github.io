@@ -30,3 +30,63 @@ div#innerCircle {
 .circleLines {
     position: relative;
 }
+
+#month-names {
+    position: relative;
+    top: -215px;
+    right: -96px;
+    -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;  
+}
+
+#month-names span {
+    font-size: 10px;
+    font-family: Franklin Gothic, sans-serif;
+    font-weight: 300;
+    height: 112px;
+    width: 8px;
+    display: block;
+    margin-bottom: -112px;
+    transform-origin: bottom center;
+}
+
+#monthNames_0{transform: rotate(10deg);}
+#monthNames_1{transform: rotate(15deg);}
+#monthNames_2{transform: rotate(20deg);}
+#monthNames_3{transform: rotate(40deg);}
+#monthNames_4{transform: rotate(45deg);}
+#monthNames_5{transform: rotate(50deg);}
+#monthNames_6{transform: rotate(70deg);}
+#monthNames_7{transform: rotate(75deg);}
+#monthNames_8{transform: rotate(80deg);}
+#monthNames_9{transform: rotate(100deg);}
+#monthNames_10{transform: rotate(105deg);}
+#monthNames_11{transform: rotate(110deg);}
+#monthNames_12{transform: rotate(130deg);}
+#monthNames_13{transform: rotate(135deg);}
+#monthNames_14{transform: rotate(140deg);}
+#monthNames_15{transform: rotate(160deg);}
+#monthNames_16{transform: rotate(165deg);}
+#monthNames_17{transform: rotate(170deg);}
+#monthNames_18{transform: rotate(190deg);}
+#monthNames_19{transform: rotate(195deg);}
+#monthNames_20{transform: rotate(200deg);}
+#monthNames_21{transform: rotate(220deg);}
+#monthNames_22{transform: rotate(225deg);}
+#monthNames_23{transform: rotate(230deg);}
+#monthNames_24{transform: rotate(250deg);}
+#monthNames_25{transform: rotate(255deg);}
+#monthNames_26{transform: rotate(260deg);}
+#monthNames_27{transform: rotate(280deg);}
+#monthNames_28{transform: rotate(285deg);}
+#monthNames_29{transform: rotate(290deg);}
+#monthNames_30{transform: rotate(310deg);}
+#monthNames_31{transform: rotate(315deg);}
+#monthNames_32{transform: rotate(320deg);}
+#monthNames_33{transform: rotate(340deg);}
+#monthNames_34{transform: rotate(345deg);}
+#monthNames_35{transform: rotate(350deg);}
