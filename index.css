@@ -6,7 +6,7 @@ html, body {
     position: relative;
 }
 
-#time-pair-container {
+#time-pair-container-month, #time-pair-container-day {
     position: absolute;
     display: inline-block;
 }
@@ -33,18 +33,19 @@ div#innerCircle {
     position:relative;
     cursor: crosshair;
     margin-bottom: -10px;
+    margin-right: -10px;
     z-index:17;
 }   
 
 .arc {
-	position: relative;
+	position: absolute;
 }
 
 .circleLines {
     position: relative;
 }
 
-#month-names, #day-names, #month-lines {
+.divNames, .divLines, .divArcs {
     display: inline-block;
     position: absolute;
     -webkit-touch-callout: none; /* iOS Safari */
@@ -55,7 +56,7 @@ div#innerCircle {
     user-select: none;
 }
 
-#month-names span, #day-names span, #month-lines span {
+.divNames span, .divLines span {
     font-size: 1em;
     font-family: Franklin Gothic, sans-serif;
     font-weight: 300;
@@ -64,6 +65,11 @@ div#innerCircle {
     display: block;
     /*margin-bottom: -112px;*/
     transform-origin: bottom center;
+    text-align: center;
+}
+
+.divArcs {
+    border-radius: 100%;
 }
 
 .lines {

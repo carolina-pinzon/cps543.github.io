@@ -1,29 +1,206 @@
 var radio = 200;
-var fontSize = 16;
+var fontSize = 12;
+var separationLetters = 3;
+var ratioRadioCircles = 0.75;
+var arcStrokeWidth = 5;
+var markerWidth = 10;
 var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 var days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+var hours = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'];
+var arrayArcs = [];
 
-var arrayMarkerPairs = [];
+var circles = [months,days,hours];
 
-function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropper, startOrEnd, arc, index){
+$(document).ready(function(){  
+    var diameter = radio*2;
+
+    for (var i = 0; i < circles.length; i++) {
+        var ratio = (1 - ratioRadioCircles)*i;
+
+        var divNames = $('<div>', {'id': i + '-names', 'class' : "divNames"});
+        $('.time-controller').append(divNames);
+
+        var divLines = $('<div>', {'id': i + '-lines', 'class' : "divLines"});
+        $('.time-controller').append(divLines);
+
+        fillCircle(i, divNames, divLines);
+
+        var divArcs = $('<div>', {'id': i + '-arcs', 'class' : "divArcs"});
+        divArcs.css("left",fontSize + ratio*radio);
+        divArcs.css("top",fontSize + ratio*radio);
+        divArcs.click(function(event) {
+            if(event.target.className != "divArcs" && event.target.className != "marker") {
+                var iCircle = this.id.split("-")[0];
+
+                var initialDegrees = getClickDegrees(event, $(this));
+
+                createArc(iCircle, $(this), initialDegrees);
+            }
+        });
+
+        var diameter = radio*(1 - (1 - ratioRadioCircles)*i)*2;
+        divArcs.width(diameter);
+        divArcs.height(diameter);
+
+        $('.time-controller').append(divArcs);
+
+        createArc(i, divArcs, 0);
+    }
+
+    $('#time-pair-container-month').css("left",radio + fontSize);
+    $('#time-pair-container-month').css("margin-left",-radio);
+    $('#time-pair-container-month').css("top",fontSize);
+
+    $('#time-pair-container-day').css("left",radio*ratioRadioCircles + fontSize);
+    $('#time-pair-container-day').css("margin-left",-radio*ratioRadioCircles);
+    $('#time-pair-container-day').css("top",fontSize);
+
+    $('.time-controller').css("font-size",fontSize);
+
+
+
+    $('#dynamic-container')[0].style.width = diameter + 'px'; 
+    $('#dynamic-container')[0].style.height = diameter + 'px';
+    $('#dynamic-container')[0].style.marginBottom = -diameter + 'px';
+
+    $('#innerCircle')[0].style.width = diameter + 'px';
+    $('#innerCircle')[0].style.height = diameter + 'px';
+    $('#innerCircle')[0].style.marginBottom = -diameter + 'px';
+
+    
+
+    //createPair();  
+
+    document.onkeydown = KeyPress;
+        
+}); 
+
+//Adds names and lines for circle iCircle
+function fillCircle(iCircle, divNames, divLines) {
+    var ratio = 1 - (1 - ratioRadioCircles)*iCircle;
+
+    for (var i = 0; i < circles[iCircle].length; i++) {
+        for (var j = 0; j < circles[iCircle][i].length; j++) {
+            var id = i*3 + j;
+            var span = $('<span>', {'class' : "names"}).text(circles[iCircle][i].charAt(j));
+            span.height(radio*ratio + fontSize);
+            span.css('margin-bottom', -radio*ratio - fontSize);
+            span.width(fontSize);
+            span.css('margin-right', -fontSize);
+            divNames.append(span);
+            var rot = 360/circles[iCircle].length*i + 180/circles[iCircle].length + separationLetters*((j - circles[iCircle][i].length/2) + 1/2);
+            span.css('transform','rotate(' + rot + 'deg)');
+        }
+        var span = $('<span>', {'class': "lines"});
+        var rot = 360/circles[iCircle].length*i;
+        span.css('transform','rotate(' + rot + 'deg)');
+        span.height(radio*ratio);
+        span.css('margin-bottom', -radio*ratio);
+        span.width(fontSize);
+        span.css('margin-right', -fontSize);
+        divLines.append(span);
+    }
+
+    divNames.css('top', radio*(1-ratio));
+    divNames.css('left', radio + fontSize/2);
+    divLines.css('top', fontSize + radio*(1-ratio));
+    divLines.css('left', radio + fontSize/2);
+}
+
+//Creates an arc for circle iCircle
+function createArc(iCircle, divArcs, initialDegrees) {
+    var ratio = 1 - (1 - ratioRadioCircles)*iCircle;
+
+    var diametro = radio*ratio*2;
+    var arc = {
+        startAngle: initialDegrees,
+        endAngle: initialDegrees,
+        iCircle: iCircle
+    };
+    arc.markerStart = $('<div>', { id: "marker_" + arrayArcs.length + "_start", class: "marker"});
+    arc.markerEnd = $('<div>', { id: "marker_" + arrayArcs.length + "_end", class: "marker"});
+
+    arc.path = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    arc.path.id = "arc_" + arrayArcs.length;
+    arc.path.setAttributeNS(null, "class", "arc"); 
+    arc.path.style.width = diametro + 'px';
+    arc.path.style.height = diametro + 'px';
+    var newpath = document.createElementNS("http://www.w3.org/2000/svg","path");  
+        newpath.setAttributeNS(null, "stroke", "#446688"); 
+        newpath.setAttributeNS(null, "stroke-width", arcStrokeWidth); 
+        newpath.setAttributeNS(null, "fill", "none");
+    arc.path.appendChild(newpath);
+
+    divArcs.append([arc.markerStart[0], arc.markerEnd[0]]);
+    divArcs.append(arc.path);
+    arrayArcs.push(arc);
+
+    initMarkers(arc, arrayArcs.length - 1, 0, divArcs, initialDegrees);
+
+}
+
+//Initialize markers (arc beginning and end)
+function initMarkers(arc, index, initialDegree, divArcs, initialDegrees) {
+    var markerStart = arc.markerStart;
+    var markerEnd = arc.markerEnd;
+
+    var ratio = 1 - (1 - ratioRadioCircles)*arc.iCircle;
+    var radioCircle = radio*ratio;
+    var rotate = 'rotate(' + initialDegrees + 'deg)';
+
+    markerStart.css("left", radioCircle - markerWidth/2);
+    markerStart.css("transform-origin",  markerWidth/2 + "px " + radioCircle + "px 0px");
+    markerStart.css("width", markerWidth);
+    markerStart.css("height", markerWidth);
+    markerStart.css("margin-bottom", -markerWidth);
+    markerStart.css("margin-right", -markerWidth);
+    markerStart.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
+    markerStart.on('mousedown', function(){
+        $('body').on('mousemove', function(event){
+            rotateMarkers($(arc.path), event.pageX, event.pageY, markerStart, 'start', arc, index);     
+        });                 
+    });
+
+    markerEnd.css("left", radioCircle - markerWidth/2);
+    markerEnd.css("transform-origin", markerWidth/2 + "px " + radioCircle + "px 0px");
+    markerEnd.css("width", markerWidth);
+    markerEnd.css("height", markerWidth);
+    markerEnd.css("margin-bottom", -markerWidth);
+    markerEnd.css("margin-right", -markerWidth);
+    markerEnd.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
+    markerEnd.on('mousedown', function(){
+        $('body').on('mousemove', function(event){
+            rotateMarkers($(arc.path), event.pageX, event.pageY, markerEnd, 'end', arc, index);    
+        });                 
+    });
+}
+
+//Rotates markers on mouse down
+function rotateMarkers(offsetSelector, xCoordinate, yCoordinate, ending, startOrEnd, arc, index){
+    var ratio = 1 - (1 - ratioRadioCircles)*arc.iCircle;
+    var radioCircle = radio*ratio;
+
     var x = xCoordinate - offsetSelector.offset().left - offsetSelector.width()/2;
     var y = -1*(yCoordinate - offsetSelector.offset().top - offsetSelector.height()/2);
     var theta = Math.atan2(y,x)*(180/Math.PI);        
 
     var cssDegs = convertThetaToCssDegs(theta);
     var rotate = 'rotate(' +cssDegs + 'deg)';
-    cropper.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
-    var radioP = radio - 2.5;
+    ending.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
+    var radioP = radioCircle - arcStrokeWidth/2;
     if (startOrEnd === 'start') {
-        arrayMarkerPairs[index].startAngle = cssDegs;
+        arrayArcs[index].startAngle = cssDegs;
     }
     else {
-        arrayMarkerPairs[index].endAngle = cssDegs;
+        arrayArcs[index].endAngle = cssDegs;
     }
-    arc.childNodes[0].setAttributeNS(null, "d", describeArc(radio, radio, radioP, arrayMarkerPairs[index].startAngle, arrayMarkerPairs[index].endAngle));  
-    $('body').on('mouseup', function(event){ $('body').unbind('mousemove')});
-}
+    arc.path.childNodes[0].setAttributeNS(null, "d", describeArc(radioCircle, radioCircle, radioP, arrayArcs[index].startAngle, arrayArcs[index].endAngle));  
     
+    $('body').on('mouseup', function(event){
+        $('body').unbind('mousemove')
+    });
+}
+
 function convertThetaToCssDegs(theta){
     var cssDegs = 90 - theta;
     if (cssDegs < 0) {
@@ -34,7 +211,6 @@ function convertThetaToCssDegs(theta){
 
 function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
     var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
-    //console.log(angleInRadians);
 
     return {
         x: centerX + (radius * Math.cos(angleInRadians)),
@@ -61,158 +237,24 @@ function describeArc(x, y, radius, startAngle, endAngle){
     return d;       
 }
 
-function initMarker(marker, arc, index,initialDegree) {
-    var startOrEnd = marker[0].id.split("_")[2];
-    var radioP = radio - 5;
-    marker[0].style.left = radioP + 'px';
-    marker[0].style.transformOrigin = "5px " + radio + "px";
-    //marker[0].style.transformOrigin = "5px " + radio + "px";
-    var rotate = 'rotate(' +initialDegree + 'deg)';
-    marker.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
-    marker.on('mousedown', function(){
-        $('body').on('mousemove', function(event){
-            rotateAnnotationCropper($('#innerCircle').parent(), event.pageX,event.pageY, marker, startOrEnd, arc, index);    
-        });                 
-    });
-}
-
-function initLastPair(initialDegree) {
-    var index = arrayMarkerPairs.length - 1;
-    var currentMarkerPair = arrayMarkerPairs[index];
-
-    initMarker(currentMarkerPair.markerStart, currentMarkerPair.arc, index, initialDegree);
-    initMarker(currentMarkerPair.markerEnd, currentMarkerPair.arc, index, initialDegree);
-}
-
-function getCssDegrees(event) {
-    console.log(event.clientX, event.clientY);
-    var offsetSelector = $('#innerCircle').parent();
+//Convert click position to degrees
+function getClickDegrees(event, element) {
+   var offsetSelector = element;
     var x = event.clientX - offsetSelector.offset().left - offsetSelector.width()/2;
     var y = -1*(event.clientY - offsetSelector.offset().top - offsetSelector.height()/2);
     var theta = Math.atan2(y,x)*(180/Math.PI);
     return convertThetaToCssDegs(theta);
 }
 
-function buildLastPair(cssDegs) {
-    var diametro = radio*2;
-    var lastPair = {
-        startAngle: cssDegs,
-        endAngle: cssDegs
-    };
-    lastPair.markerStart = $('<div>', { id: "marker_" + arrayMarkerPairs.length + "_start", class: "marker"});
-    lastPair.markerEnd = $('<div>', { id: "marker_" + arrayMarkerPairs.length + "_end", class: "marker"});
-    lastPair.arc = document.createElementNS("http://www.w3.org/2000/svg","svg");
-    lastPair.arc.setAttributeNS(null, "class", "arc"); 
-    lastPair.arc.style.width = diametro + 'px';
-    lastPair.arc.style.height = diametro + 'px';
-    //lastPair.arc.style.top = -diametro + 'px';
-    lastPair.arc.style.marginRight = -diametro + 'px';
-    var newpath = document.createElementNS("http://www.w3.org/2000/svg","path");  
-        newpath.setAttributeNS(null, "stroke", "#446688"); 
-        newpath.setAttributeNS(null, "stroke-width", 5); 
-        newpath.setAttributeNS(null, "fill", "none");
-    lastPair.arc.appendChild(newpath);
-    return lastPair;
-}
-
-function createPair(event) {
-    var cssDegs = 0;
-    if (event) {
-        cssDegs = getCssDegrees(event);
-        console.log(cssDegs);
-    }
-    var lastPair = buildLastPair(cssDegs);
-
-    $('#dynamic-container').append([lastPair.markerStart[0], lastPair.markerEnd[0]]);
-    $('#time-pair-container').append(lastPair.arc);
-    
-    arrayMarkerPairs.push(lastPair);
-    initLastPair(cssDegs);
-} 
-
+//Listen to ctrl+z to remove last arc added
 function KeyPress(e) {
-    var evtobj = window.event? event : e
-    console.log(arrayMarkerPairs.length);
-    if(evtobj.keyCode == 90 && (evtobj.ctrlKey || evtobj.metaKey) && arrayMarkerPairs.length > 1){
-        var pairToRemove = arrayMarkerPairs[arrayMarkerPairs.length - 1];
+    var evtobj = window.event? event : e;
+    if(evtobj.keyCode == 90 && (evtobj.ctrlKey || evtobj.metaKey) && arrayArcs.length > circles.length){
+        var pairToRemove = arrayArcs[arrayArcs.length - 1];
         pairToRemove.markerStart.remove();
         pairToRemove.markerEnd.remove();
-        pairToRemove.arc.removeEventListener("click", createPair);
-        pairToRemove.arc.remove();
-        arrayMarkerPairs.pop();
+        pairToRemove.path.remove();
+        arrayArcs.pop();
     }
 }
 
-function addMonthNames() {
-    for (var i = 0; i < months.length; i++) {
-        for (var j = 0; j < months[i].length; j++) {
-            console.log(months[i].charAt(j));
-            var id = i*3 + j;
-            var span = $('<span>', {'id': 'monthNames_' + id, 'class' : "names"}).text(months[i].charAt(j));
-            console.log(span);
-            $('#month-names').append(span);
-            var rot = 360/months.length*i + (j-1)*5 + 180/months.length;
-            span.css('transform','rotate(' + rot + 'deg)');
-        }
-        var span = $('<span>', {'class': "lines"});
-        var rot = 360/months.length*i;
-        span.css('transform','rotate(' + rot + 'deg)');
-        $('#month-lines').append(span);
-    }
-    $('#month-names .names').height(radio + fontSize);
-    $('#month-names .names').css('margin-bottom', -radio - fontSize);
-    $('#month-names .names').width(fontSize);
-    $('#month-names .names').css('margin-right', -fontSize);
-    $('#month-lines .lines').height(radio);
-    $('#month-lines .lines').css('margin-bottom', -radio);
-    $('#month-lines .lines').width(fontSize);
-    $('#month-lines .lines').css('margin-right', -fontSize);
-    $('#month-names').css('top', 0);
-    $('#month-names').css('left', radio + fontSize/2);
-    $('#month-lines').css('top', fontSize);
-    $('#month-lines').css('left', radio + fontSize/2);
-}
-
-function addDayNames() {
-    for (var i = 0; i < days.length; i++) {
-        for (var j = 0; j < days[i].length; j++) {
-            console.log(days[i].charAt(j));
-            var id = i*3 + j;
-            var span = $('<span>', {'id': 'dayNames_' + id}).text(days[i].charAt(j));
-            var rot = 360/days.length*i + (j-1)*5 + 180/days.length;
-            span.css('transform','rotate(' + rot + 'deg)');
-            console.log(rot);
-            $('#day-names').append(span);
-        }
-    }
-    $('#day-names span').height(radio*0.8 + 12);
-    $('#day-names span').css('margin-bottom', -radio*0.8 - 12)
-    $('#day-names').css('top', -2*radio*0.9 - 15);
-    $('#day-names').css('right', -radio + 4);
-    $('#day-names').css('margin-right', 2*radio*0.8 - 12);
-}
-
-$(document).ready(function(){  
-    var diametro = radio*2;
-
-    $('#dynamic-container')[0].style.width = diametro + 'px'; 
-    $('#dynamic-container')[0].style.height = diametro + 'px';
-    $('#dynamic-container')[0].style.marginBottom = -diametro + 'px';
-    $('#innerCircle')[0].style.width = diametro + 'px';
-    $('#innerCircle')[0].style.height = diametro + 'px';
-    $('#innerCircle')[0].style.marginBottom = -diametro + 'px';
-    $('#time-pair-container').css("left",radio + fontSize);
-    $('#time-pair-container').css("margin-left",-radio);
-    $('#time-pair-container').css("top",fontSize);
-    $('.time-controller').css("font-size",fontSize);
-
-    createPair();  
-
-    document.onkeydown = KeyPress;
-
-    addMonthNames();
-    addDayNames();
-    //addMonthLines();
-    //addDayLines();
-        
-}); 
