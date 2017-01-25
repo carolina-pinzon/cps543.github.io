@@ -1,0 +1,24 @@
+{
+  "name": "frontend-framework",
+  "version": "0.0.1-a",
+  "description": "Codesign's very own frontend framework.",
+  "main": "gulpfile.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^1.7.2"
+  },
+  "devDependencies": {
+    "bower": "^1.7.9",
+    "browser-sync": "^2.12.10",
+    "browserify": "^13.0.1",
+    "gulp": "^3.9.1",
+    "run-sequence": "^1.2.1"
+  }
+}

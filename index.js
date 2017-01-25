@@ -1,8 +1,9 @@
-var radio = 100;
+var radio = 200;
+var fontSize = 16;
+var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+var days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
 
 var arrayMarkerPairs = [];
-
-var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
 function rotateAnnotationCropper(offsetSelector, xCoordinate, yCoordinate, cropper, startOrEnd, arc, index){
     var x = xCoordinate - offsetSelector.offset().left - offsetSelector.width()/2;
@@ -124,11 +125,6 @@ function createPair(event) {
 
     $('#dynamic-container').append([lastPair.markerStart[0], lastPair.markerEnd[0]]);
     $('#time-pair-container').append(lastPair.arc);
-
-    /*if (arrayMarkerPairs.length > 0) {
-        arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.removeEventListener("click", createPair);
-    }
-    lastPair.arc.addEventListener("click", createPair);*/
     
     arrayMarkerPairs.push(lastPair);
     initLastPair(cssDegs);
@@ -144,8 +140,6 @@ function KeyPress(e) {
         pairToRemove.arc.removeEventListener("click", createPair);
         pairToRemove.arc.remove();
         arrayMarkerPairs.pop();
-
-        //arrayMarkerPairs[arrayMarkerPairs.length - 1].arc.addEventListener("click", createPair);
     }
 }
 
@@ -154,11 +148,48 @@ function addMonthNames() {
         for (var j = 0; j < months[i].length; j++) {
             console.log(months[i].charAt(j));
             var id = i*3 + j;
-            var span = $('<span>', {'id': 'monthNames_' + id}).text(months[i].charAt(j));
+            var span = $('<span>', {'id': 'monthNames_' + id, 'class' : "names"}).text(months[i].charAt(j));
             console.log(span);
             $('#month-names').append(span);
+            var rot = 360/months.length*i + (j-1)*5 + 180/months.length;
+            span.css('transform','rotate(' + rot + 'deg)');
+        }
+        var span = $('<span>', {'class': "lines"});
+        var rot = 360/months.length*i;
+        span.css('transform','rotate(' + rot + 'deg)');
+        $('#month-lines').append(span);
+    }
+    $('#month-names .names').height(radio + fontSize);
+    $('#month-names .names').css('margin-bottom', -radio - fontSize);
+    $('#month-names .names').width(fontSize);
+    $('#month-names .names').css('margin-right', -fontSize);
+    $('#month-lines .lines').height(radio);
+    $('#month-lines .lines').css('margin-bottom', -radio);
+    $('#month-lines .lines').width(fontSize);
+    $('#month-lines .lines').css('margin-right', -fontSize);
+    $('#month-names').css('top', 0);
+    $('#month-names').css('left', radio + fontSize/2);
+    $('#month-lines').css('top', fontSize);
+    $('#month-lines').css('left', radio + fontSize/2);
+}
+
+function addDayNames() {
+    for (var i = 0; i < days.length; i++) {
+        for (var j = 0; j < days[i].length; j++) {
+            console.log(days[i].charAt(j));
+            var id = i*3 + j;
+            var span = $('<span>', {'id': 'dayNames_' + id}).text(days[i].charAt(j));
+            var rot = 360/days.length*i + (j-1)*5 + 180/days.length;
+            span.css('transform','rotate(' + rot + 'deg)');
+            console.log(rot);
+            $('#day-names').append(span);
         }
     }
+    $('#day-names span').height(radio*0.8 + 12);
+    $('#day-names span').css('margin-bottom', -radio*0.8 - 12)
+    $('#day-names').css('top', -2*radio*0.9 - 15);
+    $('#day-names').css('right', -radio + 4);
+    $('#day-names').css('margin-right', 2*radio*0.8 - 12);
 }
 
 $(document).ready(function(){  
@@ -170,98 +201,18 @@ $(document).ready(function(){
     $('#innerCircle')[0].style.width = diametro + 'px';
     $('#innerCircle')[0].style.height = diametro + 'px';
     $('#innerCircle')[0].style.marginBottom = -diametro + 'px';
+    $('#time-pair-container').css("left",radio + fontSize);
+    $('#time-pair-container').css("margin-left",-radio);
+    $('#time-pair-container').css("top",fontSize);
+    $('.time-controller').css("font-size",fontSize);
 
     createPair();  
 
     document.onkeydown = KeyPress;
-    /*
-        <svg height="300" width="300">
-          <g fill="none" stroke="black" stroke-width="15">
-            <circle cx="150" cy="150" r="100" stroke-dasharray="1,51.5" />
-          </g>
-        </svg>*/
-
-
-    var today = new Date();
-    var numberDaysYear = 0;
-    for (var i = 1; i <= 12; i++) {
-        numberDaysYear += (new Date(today.getFullYear(), i, 0)).getDate();
-    }
-    var pixelsPerDay = 2*(radio-5)*Math.PI/numberDaysYear - 1;
-    for (var i = 1; i <= 12; i++) {
-        numberDaysYear += (new Date(today.getFullYear(), i, 0)).getDate();
-    }
-
-    var n = 6;
-    var pixelsPerDay = ((2*(radio-5)*Math.PI/12 - n - 2)-3)/4;
-
-    var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
-        svg.setAttributeNS(null, "width", radio*2 + 10); 
-        svg.setAttributeNS(null, "height", radio*2 + 10); 
-        svg.setAttributeNS(null, "class", "circleLines"); 
-        svg.style.top = -radio*2 - 4 + 'px';
-        svg.style.marginRight = -radio*2 - 10 + 'px';
-        svg.style.zIndex = 0;
-    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
-        g.setAttributeNS(null, "stroke", "black"); 
-        g.setAttributeNS(null, "stroke-width", 10); 
-        g.setAttributeNS(null, "fill", "none");
-    var circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
-        circle.setAttributeNS(null, "cx", radio); 
-        circle.setAttributeNS(null, "cy", radio); 
-        circle.setAttributeNS(null, "r", radio-5);
-        circle.setAttributeNS(null, "stroke-dasharray", "1," + pixelsPerDay + ",1," + pixelsPerDay + ",1," + pixelsPerDay + ",1," + pixelsPerDay + ",1," + n);
-
-    var n = 6;
-    var pixelsPerMonth = 2*(radio-10)*Math.PI/12 - n - 2;
-
-    g.appendChild(circle);
-    svg.appendChild(g);
-    //document.getElementById('body').appendChild(svg);
-
-    var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
-        svg.setAttributeNS(null, "width", radio*2 + 20); 
-        svg.setAttributeNS(null, "height", radio*2 + 20); 
-        svg.setAttributeNS(null, "class", "circleLines"); 
-        svg.style.top = -radio*2 - 4 + 'px';
-        svg.style.marginRight = -radio*2 - 20 + 'px';
-        svg.style.zIndex = 0;
-    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
-        g.setAttributeNS(null, "stroke", "black"); 
-        g.setAttributeNS(null, "stroke-width", 20); 
-        g.setAttributeNS(null, "fill", "none");
-    var circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
-        circle.setAttributeNS(null, "cx", radio); 
-        circle.setAttributeNS(null, "cy", radio); 
-        circle.setAttributeNS(null, "r", radio-10);
-        circle.setAttributeNS(null, "stroke-dasharray", "1," + pixelsPerMonth + ",1," + n);
-    g.appendChild(circle);
-    svg.appendChild(g);
-    //document.getElementById('body').appendChild(svg);
-
-    var strokeWidth = 10;
-    var pixelsPerMonth = 2*(radio-strokeWidth/2)*Math.PI/12 - 1;
-    var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
-        svg.setAttributeNS(null, "width", radio*2 + strokeWidth); 
-        svg.setAttributeNS(null, "height", radio*2 + strokeWidth); 
-        svg.setAttributeNS(null, "class", "circleLines"); 
-        svg.style.top = -radio*2 - 4 + 'px';
-        svg.style.marginRight = -radio*2 - strokeWidth + 'px';
-        svg.style.zIndex = 0;
-    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
-        g.setAttributeNS(null, "stroke", "black"); 
-        g.setAttributeNS(null, "stroke-width", strokeWidth); 
-        g.setAttributeNS(null, "fill", "none");
-    var circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
-        circle.setAttributeNS(null, "cx", radio); 
-        circle.setAttributeNS(null, "cy", radio); 
-        circle.setAttributeNS(null, "r", radio-strokeWidth/2);
-        circle.setAttributeNS(null, "stroke-dasharray", "1," + pixelsPerMonth);
-    g.appendChild(circle);
-    svg.appendChild(g);
-    document.getElementById('body').appendChild(svg);
-    svg.addEventListener("click", createPair);
 
     addMonthNames();
+    addDayNames();
+    //addMonthLines();
+    //addDayLines();
         
 }); 

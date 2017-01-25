@@ -1,47 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> 
+        <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script> 
         <!--<script type="text/javascript" src="http://momentjs.com/downloads/moment.min.js"></script>-->
        	<link rel="stylesheet" href="index.css" />
        	<script src="index.js"></script>
     </head>
     <body id="body">
-        <div id="time-pair-container">
-            <div id="container">
-                <div id ="dynamic-container">
-                    <div id ="innerCircle"></div>
-                    <!--<div id ="marker_0_start" class="marker"></div>
-                    <div id ="marker_0_end" class="marker"></div>-->
-                </div>                
-            </div>  
-            <!--<svg id="arc_0" class="arc">
-    			<path fill="none" stroke="#446688" stroke-width="5"/>
-    		</svg> -->
+        <div class="time-controller">
+            <div id="time-pair-container">
+                <div id="container">
+                    <div id ="dynamic-container">
+                        <div id ="innerCircle"></div>
+                    </div>                
+                </div>  
+            </div>
+            <div id="month-names"></div>
+            <div id="month-lines"></div>
+            <!-- <div id="day-names"></div> -->
         </div>
-<!--<svg xmlns="http://www.w3.org/2000/svg" 
-    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 500">
-<defs>
-    <path d="M243.2, 382.4c-74.8,   
-    0-135.5-60.7-135.5-135.5s60.7-135.5,135.5-135.5s135.5, 60.7, 135.5,
-    135.5 S318, 382.4, 243.2, 382.4z" id="textcircle" />
-    <style>
-        text { 
-            font-size: 6px;
-            font-family: Franklin Gothic, sans-serif;
-            font-weight: 300; 
-            text-transform: uppercase;
-            letter-spacing: 6px;
-        }
-    </style>
-</defs> 
-    <text dy="70" textLength="1200">
-        <textPath xlink:href="#textcircle">
-            ENE FEB MAR ABR MAY JUN JUL AGO SEP OCT NOV DIC
-        </textPath>
-    </text>
-</svg>-->
-<div id="month-names"></div>
     </body>
 
 </html>
