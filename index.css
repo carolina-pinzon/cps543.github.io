@@ -85,3 +85,14 @@ div#innerCircle {
     height: 10px;
     background-color: black;
 }
+
+.values {
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: right;
+}
+
+.values .circleTitle {
+    font-weight: bold;
+}

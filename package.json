@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jquery": "^1.7.2"
+    "jquery": "^1.7.2",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "bower": "^1.7.9",

@@ -1,21 +1,32 @@
-var radio = 300;
-var fontSize = 12;
-var separationLetters = 3;
-var ratioRadioCircles = 0.75;
+var fontSize = 11;
+var radio = window.innerHeight/2 - fontSize;
+var separationLetters = 2.5;
+var ratioRadioCircles = 0.8;
 var arcStrokeWidth = 8;
 var markerWidth = 12;
-var strokeColor = "rgba(68,102,136,0.8)"
+var strokeColor = "rgba(68,102,136,0.8)";
+var years = ["2012","2013","2014"];
 var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 var days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
-var hours = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'];
+//var days = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'];
+var hours = ['1:00','2:00','3:00','4:00','5:00','6:00','7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00'];
 var arrayArcs = [];
 
-var circles = [months,days,hours];
+var circles = [years,months,days,hours];
+var circlesTitles = ["years","months","days","hours"];
 
 $(document).ready(function(){  
     var diameter = radio*2;
 
     for (var i = 0; i < circles.length; i++) {
+        //
+        var circleInfo = $('<div>', {'id' : i + "-info",'class' : "circleInfo"});
+        var circleTitle = $('<div>', {'class' : "circleTitle"}).text(circlesTitles[i]);
+        circleInfo.append(circleTitle);
+        $('.values').append(circleInfo);
+        //
+
+
         var ratio = (1 - ratioRadioCircles)*i;
 
         var divNames = $('<div>', {'id': i + '-names', 'class' : "divNames"});
@@ -120,6 +131,9 @@ function createArc(iCircle, divArcs, initialDegrees) {
 
     initMarkers(arc, arrayArcs.length - 1, 0, divArcs, initialDegrees);
 
+    var arcInfo = $('<div>',{'id' : arrayArcs.length - 1 + "-arcInfo",'class' : "arcInfo"}).text(initialDegrees.toFixed(3) + " - " + initialDegrees.toFixed(3));
+    $("#" + iCircle + "-info").append(arcInfo);
+
 }
 
 //Initialize markers (arc beginning and end)
@@ -140,7 +154,8 @@ function initMarkers(arc, index, initialDegree, divArcs, initialDegrees) {
     markerStart.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
     markerStart.on('mousedown', function(){
         $('body').on('mousemove', function(event){
-            rotateMarkers($(arc.path), event.pageX, event.pageY, markerStart, 'start', arc, index);     
+            rotateMarkers($(arc.path), event.pageX, event.pageY, markerStart, 'start', arc, index);   
+            valuesChangedDebounced();
         });                 
     });
 
@@ -153,9 +168,19 @@ function initMarkers(arc, index, initialDegree, divArcs, initialDegrees) {
     markerEnd.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
     markerEnd.on('mousedown', function(){
         $('body').on('mousemove', function(event){
-            rotateMarkers($(arc.path), event.pageX, event.pageY, markerEnd, 'end', arc, index);    
+            rotateMarkers($(arc.path), event.pageX, event.pageY, markerEnd, 'end', arc, index); 
+            valuesChangedDebounced();
         });                 
     });
+}
+
+var valuesChangedDebounced = _.debounce(valuesChanged, 250);
+
+function valuesChanged() {
+    console.log("valuesChanged");
+    for (var i = 0; i < arrayArcs.length; i++) {
+        $('#' + i + "-arcInfo").text(arrayArcs[i].startAngle.toFixed(3) + " - " + arrayArcs[i].endAngle.toFixed(3));
+    }
 }
 
 //Rotates markers on mouse down
@@ -168,14 +193,21 @@ function rotateMarkers(offsetSelector, xCoordinate, yCoordinate, ending, startOr
     var theta = Math.atan2(y,x)*(180/Math.PI);        
 
     var cssDegs = convertThetaToCssDegs(theta);
-    var rotate = 'rotate(' +cssDegs + 'deg)';
+    var degreesOneSection = 360/circles[arc.iCircle].length;
+    var section = Math.round(cssDegs/degreesOneSection);
+
+    var degrees = degreesOneSection*section;
+    console.log(degrees);
+
+    var rotate = 'rotate(' + degrees + 'deg)';
+
     ending.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
     var radioP = radioCircle - arcStrokeWidth/2;
     if (startOrEnd === 'start') {
-        arrayArcs[index].startAngle = cssDegs;
+        arrayArcs[index].startAngle = degrees;
     }
     else {
-        arrayArcs[index].endAngle = cssDegs;
+        arrayArcs[index].endAngle = degrees;
     }
     arc.path.childNodes[0].setAttributeNS(null, "d", describeArc(radioCircle, radioCircle, radioP, arrayArcs[index].startAngle, arrayArcs[index].endAngle));  
     
@@ -212,12 +244,22 @@ function describeArc(x, y, radius, startAngle, endAngle){
 
     var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
 
+    console.log(startAngle,endAngle);
+
+    if(Math.abs(endAngle - startAngle) == 360 || Math.abs(endAngle - startAngle) == 0) {
+        return circlePath(x, y, radius);
+    }
+
     var d = [
         "M", start.x, start.y, 
         "A", radius, radius, 0, arcSweep, 0, end.x, end.y
     ].join(" ");
 
     return d;       
+}
+
+function circlePath(cx, cy, r){
+    return 'M '+cx+' '+cy+' m -'+r+', 0 a '+r+','+r+' 0 1,0 '+(r*2)+',0 a '+r+','+r+' 0 1,0 -'+(r*2)+',0';
 }
 
 //Convert click position to degrees
