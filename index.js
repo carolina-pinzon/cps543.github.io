@@ -45,8 +45,12 @@ $(document).ready(function(){
                 var iCircle = this.id.split("-")[0];
 
                 var initialDegrees = getClickDegrees(event, $(this));
+                var degreesOneSection = 360/circles[iCircle].length;
+                var section = Math.round(initialDegrees/degreesOneSection);
 
-                createArc(iCircle, $(this), initialDegrees);
+                var degrees = degreesOneSection*section;
+
+                createArc(iCircle, $(this), degrees);
             }
         });
 
@@ -177,9 +181,11 @@ function initMarkers(arc, index, initialDegree, divArcs, initialDegrees) {
 var valuesChangedDebounced = _.debounce(valuesChanged, 250);
 
 function valuesChanged() {
-    console.log("valuesChanged");
+    $('.arcInfo').remove();
     for (var i = 0; i < arrayArcs.length; i++) {
-        $('#' + i + "-arcInfo").text(arrayArcs[i].startAngle.toFixed(3) + " - " + arrayArcs[i].endAngle.toFixed(3));
+        var arcInfo = $('<div>',{'id' : arrayArcs.length - 1 + "-arcInfo",'class' : "arcInfo"}).text(arrayArcs[i].startAngle.toFixed(3) + " - " + arrayArcs[i].endAngle.toFixed(3));
+        $("#" + arrayArcs[i].iCircle + "-info").append(arcInfo);
+        //$('#' + i + "-arcInfo").text(arrayArcs[i].startAngle.toFixed(3) + " - " + arrayArcs[i].endAngle.toFixed(3));
     }
 }
 
@@ -197,7 +203,6 @@ function rotateMarkers(offsetSelector, xCoordinate, yCoordinate, ending, startOr
     var section = Math.round(cssDegs/degreesOneSection);
 
     var degrees = degreesOneSection*section;
-    console.log(degrees);
 
     var rotate = 'rotate(' + degrees + 'deg)';
 
@@ -244,8 +249,6 @@ function describeArc(x, y, radius, startAngle, endAngle){
 
     var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
 
-    console.log(startAngle,endAngle);
-
     if(Math.abs(endAngle - startAngle) == 360 || Math.abs(endAngle - startAngle) == 0) {
         return circlePath(x, y, radius);
     }
@@ -280,6 +283,8 @@ function KeyPress(e) {
         pairToRemove.markerEnd.remove();
         pairToRemove.path.remove();
         arrayArcs.pop();
+
+        valuesChanged();
     }
 }
 
