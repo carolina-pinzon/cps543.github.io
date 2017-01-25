@@ -77,8 +77,7 @@ div#innerCircle {
     position: relative;
 }
 
-.lines:after {
-    content: "";
+.lines .after {
     position: absolute;
     top: 0;
     right: 0.4em;

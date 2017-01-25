@@ -1,9 +1,10 @@
-var radio = 200;
+var radio = 300;
 var fontSize = 12;
 var separationLetters = 3;
 var ratioRadioCircles = 0.75;
-var arcStrokeWidth = 5;
-var markerWidth = 10;
+var arcStrokeWidth = 8;
+var markerWidth = 12;
+var strokeColor = "rgba(68,102,136,0.8)"
 var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 var days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
 var hours = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'];
@@ -47,29 +48,7 @@ $(document).ready(function(){
         createArc(i, divArcs, 0);
     }
 
-    $('#time-pair-container-month').css("left",radio + fontSize);
-    $('#time-pair-container-month').css("margin-left",-radio);
-    $('#time-pair-container-month').css("top",fontSize);
-
-    $('#time-pair-container-day').css("left",radio*ratioRadioCircles + fontSize);
-    $('#time-pair-container-day').css("margin-left",-radio*ratioRadioCircles);
-    $('#time-pair-container-day').css("top",fontSize);
-
     $('.time-controller').css("font-size",fontSize);
-
-
-
-    $('#dynamic-container')[0].style.width = diameter + 'px'; 
-    $('#dynamic-container')[0].style.height = diameter + 'px';
-    $('#dynamic-container')[0].style.marginBottom = -diameter + 'px';
-
-    $('#innerCircle')[0].style.width = diameter + 'px';
-    $('#innerCircle')[0].style.height = diameter + 'px';
-    $('#innerCircle')[0].style.marginBottom = -diameter + 'px';
-
-    
-
-    //createPair();  
 
     document.onkeydown = KeyPress;
         
@@ -92,6 +71,9 @@ function fillCircle(iCircle, divNames, divLines) {
             span.css('transform','rotate(' + rot + 'deg)');
         }
         var span = $('<span>', {'class': "lines"});
+        var after = $('<span>', {'class': "after"});
+        after.height(markerWidth);
+        span.append(after);
         var rot = 360/circles[iCircle].length*i;
         span.css('transform','rotate(' + rot + 'deg)');
         span.height(radio*ratio);
@@ -105,6 +87,7 @@ function fillCircle(iCircle, divNames, divLines) {
     divNames.css('left', radio + fontSize/2);
     divLines.css('top', fontSize + radio*(1-ratio));
     divLines.css('left', radio + fontSize/2);
+
 }
 
 //Creates an arc for circle iCircle
@@ -126,7 +109,7 @@ function createArc(iCircle, divArcs, initialDegrees) {
     arc.path.style.width = diametro + 'px';
     arc.path.style.height = diametro + 'px';
     var newpath = document.createElementNS("http://www.w3.org/2000/svg","path");  
-        newpath.setAttributeNS(null, "stroke", "#446688"); 
+        newpath.setAttributeNS(null, "stroke", strokeColor); 
         newpath.setAttributeNS(null, "stroke-width", arcStrokeWidth); 
         newpath.setAttributeNS(null, "fill", "none");
     arc.path.appendChild(newpath);
