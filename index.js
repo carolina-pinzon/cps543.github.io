@@ -2,8 +2,8 @@ var fontSize = 11;
 var radio = window.innerHeight/2 - fontSize;
 var separationLetters = 2.5;
 var ratioRadioCircles = 0.8;
-var arcStrokeWidth = 8;
-var markerWidth = 12;
+var arcStrokeWidth = 10;
+var markerWidth = arcStrokeWidth;
 var strokeColor = "rgba(68,102,136,0.8)";
 var years = ["2012","2013","2014","2015","2016"];
 var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -117,8 +117,8 @@ function createArc(iCircle, divArcs, initialDegrees) {
         endAngle: initialDegrees + degreesOneSection,
         iCircle: iCircle
     };
-    arc.markerStart = $('<div>', { id: "marker_" + arrayArcs.length + "_start", class: "marker"});
-    arc.markerEnd = $('<div>', { id: "marker_" + arrayArcs.length + "_end", class: "marker"});
+    arc.markerStart = $('<div>', { id: "marker_" + arrayArcs.length + "_start", class: "marker markerStart"});
+    arc.markerEnd = $('<div>', { id: "marker_" + arrayArcs.length + "_end", class: "marker markerEnd"});
 
     arc.path = document.createElementNS("http://www.w3.org/2000/svg","svg");
     arc.path.id = "arc_" + arrayArcs.length;

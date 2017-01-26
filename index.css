@@ -35,7 +35,22 @@ div#innerCircle {
     margin-bottom: -10px;
     margin-right: -10px;
     z-index:17;
-}   
+}
+
+.markerStart {
+
+}  
+
+.markerEnd:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom right, transparent 0%, transparent 50%, black 50%, black 100%);
+    transform: rotate(-45deg);
+} 
 
 .arc {
 	position: absolute;
