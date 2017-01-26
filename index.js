@@ -23,6 +23,8 @@ $(document).ready(function(){
         var circleTitle = $('<div>', {'class' : "circleTitle"}).text(circlesTitles[i]);
         circleInfo.append(circleTitle);
         $('.values').append(circleInfo);
+        $('.values').css("left",radio*2 + fontSize);
+        $('.note').css("left",radio*2 + fontSize);
         //
 
 
@@ -41,6 +43,7 @@ $(document).ready(function(){
         divArcs.css("top",fontSize + ratio*radio);
         divArcs.click(function(event) {
             if(event.target.className != "divArcs" && event.target.className != "marker") {
+                $(".note").removeClass("hide");
                 var iCircle = this.id.split("-")[0];
 
                 var initialDegrees = getClickDegrees(event, $(this));
@@ -306,6 +309,9 @@ function KeyPress(e) {
         arrayArcs.pop();
 
         valuesChanged();
+    }
+    if(arrayArcs.length == circles.length) {
+        $(".note").addClass("hide");
     }
 }
 

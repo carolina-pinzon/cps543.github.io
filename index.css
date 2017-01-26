@@ -1,5 +1,6 @@
 html, body {
     margin: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 .time-controller {
@@ -104,11 +105,37 @@ div#innerCircle {
 
 .values {
     position: absolute;
-    right: 0;
     top: 0;
-    text-align: right;
+    padding: 10px;
+}
+
+.values div {
+    padding: 5px 10px;
+    border: 1px solid black;
+    margin-bottom: -1px;
 }
 
 .values .circleTitle {
     font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 20px;
+    background-color: #e2e2e2;
+}
+
+.values .circleInfo {
+    border: 0px solid black;
+}
+
+.note {
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+}
+
+.hide {
+    visibility: hidden;
+}
+
+@keyframes blinker {  
+  50% { opacity: 0; }
 }
