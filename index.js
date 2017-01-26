@@ -5,7 +5,7 @@ var ratioRadioCircles = 0.8;
 var arcStrokeWidth = 8;
 var markerWidth = 12;
 var strokeColor = "rgba(68,102,136,0.8)";
-var years = ["2012","2013","2014"];
+var years = ["2012","2013","2014","2015","2016"];
 var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 var days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
 //var days = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'];
@@ -108,11 +108,13 @@ function fillCircle(iCircle, divNames, divLines) {
 //Creates an arc for circle iCircle
 function createArc(iCircle, divArcs, initialDegrees) {
     var ratio = 1 - (1 - ratioRadioCircles)*iCircle;
+    var degreesOneSection = 360/circles[iCircle].length;
 
     var diametro = radio*ratio*2;
+    var radioP = radio*ratio - arcStrokeWidth/2;
     var arc = {
         startAngle: initialDegrees,
-        endAngle: initialDegrees,
+        endAngle: initialDegrees + degreesOneSection,
         iCircle: iCircle
     };
     arc.markerStart = $('<div>', { id: "marker_" + arrayArcs.length + "_start", class: "marker"});
@@ -127,6 +129,7 @@ function createArc(iCircle, divArcs, initialDegrees) {
         newpath.setAttributeNS(null, "stroke", strokeColor); 
         newpath.setAttributeNS(null, "stroke-width", arcStrokeWidth); 
         newpath.setAttributeNS(null, "fill", "none");
+        newpath.setAttributeNS(null, "d", describeArc(radio*ratio, radio*ratio, radioP, arc.startAngle, arc.endAngle));  
     arc.path.appendChild(newpath);
 
     divArcs.append([arc.markerStart[0], arc.markerEnd[0]]);
@@ -135,9 +138,7 @@ function createArc(iCircle, divArcs, initialDegrees) {
 
     initMarkers(arc, arrayArcs.length - 1, 0, divArcs, initialDegrees);
 
-    var arcInfo = $('<div>',{'id' : arrayArcs.length - 1 + "-arcInfo",'class' : "arcInfo"}).text(initialDegrees.toFixed(3) + " - " + initialDegrees.toFixed(3));
-    $("#" + iCircle + "-info").append(arcInfo);
-
+    valuesChanged();
 }
 
 //Initialize markers (arc beginning and end)
@@ -148,6 +149,7 @@ function initMarkers(arc, index, initialDegree, divArcs, initialDegrees) {
     var ratio = 1 - (1 - ratioRadioCircles)*arc.iCircle;
     var radioCircle = radio*ratio;
     var rotate = 'rotate(' + initialDegrees + 'deg)';
+    var degreesOneSection = 360/circles[arc.iCircle].length;
 
     markerStart.css("left", radioCircle - markerWidth/2);
     markerStart.css("transform-origin",  markerWidth/2 + "px " + radioCircle + "px 0px");
@@ -169,6 +171,8 @@ function initMarkers(arc, index, initialDegree, divArcs, initialDegrees) {
     markerEnd.css("height", markerWidth);
     markerEnd.css("margin-bottom", -markerWidth);
     markerEnd.css("margin-right", -markerWidth);
+    var endAngle = initialDegrees+degreesOneSection;
+    var rotate = 'rotate(' + endAngle + 'deg)';
     markerEnd.css({'-moz-transform': rotate, 'transform' : rotate, '-webkit-transform': rotate, '-ms-transform': rotate});
     markerEnd.on('mousedown', function(){
         $('body').on('mousemove', function(event){
@@ -183,7 +187,25 @@ var valuesChangedDebounced = _.debounce(valuesChanged, 250);
 function valuesChanged() {
     $('.arcInfo').remove();
     for (var i = 0; i < arrayArcs.length; i++) {
-        var arcInfo = $('<div>',{'id' : arrayArcs.length - 1 + "-arcInfo",'class' : "arcInfo"}).text(arrayArcs[i].startAngle.toFixed(3) + " - " + arrayArcs[i].endAngle.toFixed(3));
+        var iArrayStart = Math.round(arrayArcs[i].startAngle/(360/circles[arrayArcs[i].iCircle].length));
+        var iArrayEnd = Math.round(arrayArcs[i].endAngle/(360/circles[arrayArcs[i].iCircle].length) - 1);
+
+        if(iArrayEnd < 0) {
+            iArrayEnd = circles[arrayArcs[i].iCircle].length - 1;
+        }
+        else if(iArrayEnd > circles[arrayArcs[i].iCircle].length - 1) {
+            iArrayEnd = 0;
+        }
+
+        if(iArrayStart > circles[arrayArcs[i].iCircle].length - 1) {
+            iArrayStart = 0;
+        }
+        else if(iArrayStart < 0) {
+            iArrayStart = circles[arrayArcs[i].iCircle].length - 1;
+        }
+        
+
+        var arcInfo = $('<div>',{'id' : arrayArcs.length - 1 + "-arcInfo",'class' : "arcInfo"}).text(circles[arrayArcs[i].iCircle][iArrayStart] + " - " + circles[arrayArcs[i].iCircle][iArrayEnd]);
         $("#" + arrayArcs[i].iCircle + "-info").append(arcInfo);
         //$('#' + i + "-arcInfo").text(arrayArcs[i].startAngle.toFixed(3) + " - " + arrayArcs[i].endAngle.toFixed(3));
     }
