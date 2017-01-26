@@ -4,12 +4,11 @@ var separationLetters = 2.5;
 var ratioRadioCircles = 0.8;
 var arcStrokeWidth = 10;
 var markerWidth = arcStrokeWidth;
-var strokeColor = "rgba(68,102,136,0.8)";
 var years = ["2012","2013","2014","2015","2016"];
 var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 var days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
-//var days = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'];
 var hours = ['1:00','2:00','3:00','4:00','5:00','6:00','7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','24:00'];
+var hues = ["rgba(83, 119, 119,0.8)","rgba(85, 36, 55,0.8)","rgba(190, 43, 62,0.8)","rgba(214, 92, 68,0.8)"];
 var arrayArcs = [];
 
 var circles = [years,months,days,hours];
@@ -126,7 +125,7 @@ function createArc(iCircle, divArcs, initialDegrees) {
     arc.path.style.width = diametro + 'px';
     arc.path.style.height = diametro + 'px';
     var newpath = document.createElementNS("http://www.w3.org/2000/svg","path");  
-        newpath.setAttributeNS(null, "stroke", strokeColor); 
+        newpath.setAttributeNS(null, "stroke", hues[iCircle]); 
         newpath.setAttributeNS(null, "stroke-width", arcStrokeWidth); 
         newpath.setAttributeNS(null, "fill", "none");
         newpath.setAttributeNS(null, "d", describeArc(radio*ratio, radio*ratio, radioP, arc.startAngle, arc.endAngle));  

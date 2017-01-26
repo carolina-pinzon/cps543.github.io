@@ -45,11 +45,12 @@ div#innerCircle {
     content: '';
     position: absolute;
     top: 0;
-    left: 25%;
-    width: 100%;
-    height: 100%;
+    left: -1px;
+    width: 120%;
+    height: 120%;
     background: linear-gradient(to bottom right, transparent 0%, transparent 50%, black 50%, black 100%);
     transform: rotate(-45deg);
+    transform-origin: 60% 0;
 } 
 
 .arc {
