@@ -1,2 +1,2 @@
 # Time Filter
-DEMO: http://timefilter.carolinapinzon.com/
+DEMO: http://cps543.github.io/
